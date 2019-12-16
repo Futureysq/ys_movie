@@ -1,0 +1,20 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+import {registerModule} from './registerStore/registerModule'
+import {indexModule} from './indexStore/indexModule'
+import {loginModule} from './loginStore/loginModule'
+import {movieModule} from './movieStore/movieModule'
+import {homeModule} from './homeStore/homeModule'
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  modules: {
+    registerModule,
+    indexModule,
+    loginModule,
+    movieModule,
+    homeModule
+  }
+})
