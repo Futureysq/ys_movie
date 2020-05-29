@@ -200,7 +200,6 @@ export default {
       url: "https://douban.uieee.com/v2/movie/subject/" + id
     })
       .then(result => {
-        // console.log(result.data.popular_comments[0].content);
 
         //将电影类型合并
         result.data.genresInfo = result.data.genres.join(" / ");
