@@ -1,7 +1,8 @@
 <template>
   <div class="register">
     <div class="logo-box">
-      <div class="logo"></div>
+      <div class="logo">
+      </div>
     </div>
     <div class="list">
       <van-cell-group>
@@ -82,15 +83,22 @@ export default {
         //查找用户
         for (let i = 0; i < users.length; i++) {
           if (users[i].username == this.user.value) {
-              //如果该用户存在
-              //匹配密码
               if (users[i].pwd == this.passw1.value) {
                 this.$toast({
                   duration: 2000,
                   message: '登录成功'
                 })
                 this.$store.commit('loginModule/login', false);
-                return;
+                // 跳转到首页
+                // 记录用户登录状态
+                let user = {
+                  isLogin: true,
+                  username: this.user.value
+                };
+                
+                localStorage.setItem('user', JSON.stringify(user));
+
+                return this.$router.push({name: 'home'});
               } else {
                 this.$toast({
                   duration: 2000,
@@ -115,8 +123,6 @@ export default {
     validPa(value, fnName, o) {
       let isValid = validForm[fnName](value);
 
-      // console.log("isValid ==> ", isValid);
-
       o.isValid = isValid;
 
       this.$store.commit("loginModule/validPa", o);
@@ -128,10 +134,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.register{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  // height: 100%;
+
+  // background: url("../assets/images/p2574278284.jpg");
+  // background-size: cover;
 .logo-box {
   height: 200px;
   position: relative;
-  background: url("../assets/images/register_bg.png");
+  // background: url("../assets/images/register_bg.png");
   background-size: cover;
   .logo {
     width: 100px;
@@ -142,7 +158,9 @@ export default {
     top: 0;
     bottom: 0;
     margin: auto;
-    background-color: antiquewhite;
+    background: url("../assets/images/96dda144ad345982baf7b0ed0af431adcbef844b.jpg");
+    background-size: cover;
+    // background-color: antiquewhite;
     border-radius: 50%;
   }
 }
@@ -158,5 +176,6 @@ export default {
 }
 .login-text {
   color: #666;
+}  
 }
 </style>

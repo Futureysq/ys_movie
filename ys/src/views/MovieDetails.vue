@@ -1,48 +1,40 @@
 <template>
   <div class="movieDetails">
     <div class="nav">
-      <van-icon size="25px" color="#f5f5f5" name="arrow-left" />
+      <van-nav-bar title="电影详情" left-text="返回" left-arrow :border="noactive" @click-left="back" />
     </div>
     <div class="movie-post">
-      <img
-        class="auto-img"
-        src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1575957621760&di=dd98785cdf1be88054cd70e0aee759cc&imgtype=0&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2F2018-05-07%2F5aefe314c18af.jpg"
-        alt
-      />
+      <img class="auto-img" :src="movieDetailsData.images.large" alt />
       <div class="info clearfix">
         <div class="number fl">
-          <div class="people">购票人数</div>
+          <div class="people">评论人数</div>
           <div class="people-sum">
-            <span>11.42万</span>
+            <span>{{movieDetailsData.comments}}</span>
           </div>
         </div>
         <div class="pingfen fl">
           <div class>电影评分</div>
-          <div class="rank">7.8</div>
+          <div class="rank">{{movieDetailsData.rating.average}}</div>
         </div>
         <div class="play-sum fr">
           <div>播放量</div>
-          <div class="play-count">37.82万</div>
+          <div class="play-count">{{movieDetailsData.playcount}}</div>
         </div>
       </div>
     </div>
     <div class="movie-info clearfix">
       <div class="img fl">
-        <img
-          class="auto-img"
-          src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2576090251.jpg"
-          alt
-        />
+        <img class="auto-img" :src="movieDetailsData.images.medium" alt />
       </div>
       <div class="info1 fl">
-        <div class="name">误杀</div>
+        <div class="name one-text">{{movieDetailsData.title}}</div>
         <div class="type-time">
-          <span class="type">剧情/犯罪</span>
-          <span class="time">123分钟</span>
+          <span class="type">{{movieDetailsData.genresInfo}}</span>
+          <span class="time">{{movieDetailsData.durations[0]}}</span>
         </div>
         <div class="date">
-          上映日期：2019-12-12
-          <span>(美国)</span>
+          上映日期：{{movieDetailsData.pubdate}}
+          <span>({{movieDetailsData.countries[0]}})</span>
         </div>
       </div>
     </div>
@@ -55,81 +47,303 @@
         :border="false"
         background="#060517"
       >
-        <van-tab title="简介" name="a">李维杰与妻子阿玉来泰打拼17年，膝下育有两个女儿，年届四十的他靠开设网络公司为生，为人也颇得小镇居民的好感，而这一切美好却被突如其来的不速之客打破。这个充斥走私，贩毒活动的边陲小镇，各种权力交织碾压公平正义。李维杰的大女儿被督察长的儿子强暴，因反抗误杀对方。李维杰曾亲眼 目睹督察长滥用私刑，深知法律无用，为了维护女儿，捍卫家人，李维杰埋尸掩盖一切证据，在时间与空间的交错缝隙中，与警方在身心层面，展开了殊死一搏的较量。</van-tab>
-        <van-tab title="演员" name="b">内容 2</van-tab>
-        <van-tab title="影评" name="c">内容 3</van-tab>
+        <van-tab title="简介" name="a">{{movieDetailsData.summary}}</van-tab>
+        <van-tab title="演员" name="b">
+          <div class="yanyuan">
+            <div
+              class="yanyuan-box clearfix"
+            >
+              <div
+                ref="yanyuan"
+                class="yanyuan-item"
+                v-for="(item, index) in movieDetailsData.casts"
+                :key="index"
+              >
+                <div class="name-img">
+                  <img class="auto-img" :src="item.avatars.small" alt />
+                </div>
+                <div class="name one-text">{{item.name}}</div>
+              </div>
+            </div>
+          </div>
+        </van-tab>
+        <van-tab title="影评" name="c"></van-tab>
         <van-tab title="更多" name="d">内容 4</van-tab>
       </van-tabs>
     </div>
     <div class="footer clearfix">
       <div class="inner">
         <div class="shoucang fl">
-        <van-icon name="like-o" color="#fff" size="20px"/>
-      </div>
-      <div class="fl">
-        <div class="buy-icon">
-          <van-icon name="add-o" color="#EB48AD" size="20px"/>
+          <van-icon
+            @click="likeMovie(movieDetailsData)"
+            class="collection"
+            :class="{active: likeActive}"
+            name="like-o"
+            size="20px"
+          />
         </div>
-        <p class="select">选座购票</p>
-      </div>
-      <div class="share fl">
-        <van-icon name="share" color="#fff" size="20px"/>
-      </div>
+        <div class="fl">
+          <button class="buyticket" @click="buyTick(movieDetailsData.id)">购票</button>
+        </div>
+        <div class="share fl">
+          <van-icon name="share" color="#fff" size="20px" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from "vuex";
+
+const { mapState, mapMutations } = createNamespacedHelpers(
+  "movieDetailsModule"
+);
 export default {
   name: "movieDetails",
   data() {
     return {
       active: true,
       activeName: "a",
-      tabActive: 'home'
+      tabActive: "home",
+      noactive: false
     };
   },
   methods: {
     onClickLeft() {
       this.$router.go(-1);
     }
+  },
+  computed: {
+    ...mapState(["movieDetailsData", "display", "likeActive"])
+  },
+
+  methods: {
+    ...mapMutations(["changeDisplay", "resetState"]),
+
+    // 返回上一步
+    back() {
+      this.$router.go(-1);
+    },
+
+    //收藏电影
+    likeMovie(item) {
+      // console.log("item==>", item);
+      //获取用户登录状态
+      let userStatus = localStorage.getItem("user");
+
+      if (userStatus) {
+        userStatus = JSON.parse(userStatus);
+
+        if (!userStatus.isLogin) {
+          return this.$router.push({ name: "login" });
+        }
+
+        //获取用户收藏的电影
+        let likeMovieData = localStorage.getItem("likeMovieData");
+        likeMovieData = likeMovieData ? JSON.parse(likeMovieData) : {};
+
+        //记录当前用户收藏的电影
+        let currentLikeMovieData = likeMovieData[userStatus.username];
+
+        if (!currentLikeMovieData) {
+          likeMovieData[userStatus.username] = [];
+        }
+
+        //收藏电影之前，根据电影的id判断是否已经收藏过该电影
+        for (let i = 0; i < likeMovieData[userStatus.username].length; i++) {
+          if (likeMovieData[userStatus.username][i].id == item.id) {
+            //提示用户
+            this.$toast("你已经收藏过该电影");
+            return;
+          }
+        }
+
+        this.$store.commit("movieDetailsModule/changelikeActive", true);
+
+        //将电影推进likeMovieData[userStatus.username]
+        likeMovieData[userStatus.username].unshift(item);
+
+        // console.log("likeMovieData==>", likeMovieData);
+
+        localStorage.setItem("likeMovieData", JSON.stringify(likeMovieData));
+
+        this.$toast.success("收藏成功");
+      } else {
+        this.$router.push({ name: "login" });
+      }
+    },
+
+    //购票
+    buyTick(id) {
+      this.$router.push({ name: "buyMovieTick", query: { id } });
+    }
+  },
+
+  created() {
+    //开启加载提示
+    this.$toast.loading({
+      duration: 0,
+      message: "加载中..."
+    });
+
+    //重置state
+    this.resetState();
+
+    //截取路由参数
+    let id = this.$route.params.id;
+
+    // console.log(id);
+
+    this.axios({
+      method: "GET",
+      url: "https://douban.uieee.com/v2/movie/subject/" + id
+    })
+      .then(result => {
+        // console.log(result.data.popular_comments[0].content);
+
+        //将电影类型合并
+        result.data.genresInfo = result.data.genres.join(" / ");
+
+        // //超过1000, 不足10000，以k显示，超过10000以w显示，不足1000，直接显示
+        let comments = result.data.comments_count;
+        let playcount = result.data.ratings_count;
+
+        result.data.comments =
+          comments >= 10000
+            ? (comments / 10000).toFixed(1) + "w"
+            : comments >= 1000
+            ? (comments / 1000).toFixed(1) + "k"
+            : comments;
+        result.data.playcount =
+          playcount >= 10000
+            ? (playcount / 10000).toFixed(1) + "w"
+            : playcount >= 1000
+            ? (playcount / 1000).toFixed(1) + "k"
+            : playcount;
+
+        this.$store
+          .dispatch("movieDetailsModule/getMovieDetailsData", result.data)
+          .then(() => {
+            this.$toast.clear();
+            // let yanyuanBoxWidth = this.$refs.yanyuan[0].clientWidth;
+            // console.log("yanyuanBoxWidth==>", yanyuanBoxWidth);
+
+            // this.$store.commit("movieDetailsModule/changeW", yanyuanBoxWidth);
+            //根据用户登录状态，判断该电影是否被该用户收藏
+            let userStatus = localStorage.getItem("user");
+            let isActive = userStatus && JSON.parse(userStatus).isLogin;
+
+            //如果用户登录
+            if (isActive) {
+              let username = JSON.parse(userStatus).username;
+
+              //所有用户收藏的电影
+              let likeMovieData = localStorage.getItem("likeMovieData");
+
+              likeMovieData = likeMovieData ? JSON.parse(likeMovieData) : {};
+
+              //获取当前用户收藏的电影
+              let currentLikeMovieData = likeMovieData[username];
+
+              currentLikeMovieData = currentLikeMovieData
+                ? currentLikeMovieData
+                : [];
+
+              for (let i = 0; i < currentLikeMovieData.length; i++) {
+                if (this.movieDetailsData.id == currentLikeMovieData[i].id) {
+                  this.$store.commit(
+                    "movieDetailsModule/changelikeActive",
+                    true
+                  );
+                  return;
+                }
+              }
+
+              this.$store.commit("movieDetailsModule/changelikeActive", false);
+            } else {
+              this.$store.commit("movieDetailsModule/changelikeActive", false);
+            }
+          });
+      })
+      .catch(err => {
+        this.$toast.clear();
+      });
   }
 };
 </script>
 
 <style lang="less" scoped>
 .movieDetails {
-  .footer{
+  background-color: #1f1f20;
+  .footer {
     // width: calc(~"100% - 20px";
     padding: 0 10px;
     height: 66px;
-    background-color: #14112C;
-    
-    .inner{
+    background-color: #14112c;
+
+    .inner {
       width: 100%;
       margin: 0 auto;
-      >div{
+      > div {
         width: 33.3%;
         text-align: center;
-        
       }
-      .shoucang{
-        line-height: 67px;
+      .shoucang {
+        margin-top: 10.5px;
+        .collection {
+          color: #fff;
+        }
+        .collection.active {
+          color: #fe0251;
+        }
       }
-      .share{
-        line-height: 67px;
+      .buyticket {
+        line-height: 32.5px;
+        outline: none;
+        width: 100%;
+        font-size: 18px;
+        background-color: #fe0251;
+        border: none;
+        border-radius: 5px;
+        margin-top: 16.75px;
       }
-      .select{
+      .share {
+        margin-top: 10.5px;
+      }
+      .select {
         color: aliceblue;
       }
     }
   }
   .content {
-    height: 300px;
+    // height: 300px;
     padding: 10px 10px 10px 10px;
     color: rgb(224, 204, 204);
     background-color: #060517;
+    .name-img {
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .name {
+      margin: 10px 0;
+      text-align: center;
+      font-size: 12px;
+      color: #222;
+    }
+    .yanyuan {
+      overflow-x: auto;
+      overflow-y: hidden;
+      margin-top: 10px;
+    }
+    .yanyuan-box {
+      width: 480px;
+    }
+    .yanyuan-item {
+      float: left;
+      width: 100px;
+      padding: 10px;
+    }
   }
   .movie-info {
     height: 90px;
@@ -152,6 +366,7 @@ export default {
         margin-bottom: 5px;
       }
       .name {
+        max-width: 250px;
         font-size: 16px;
         color: #fff;
       }
@@ -178,13 +393,14 @@ export default {
   }
   .people {
     font-size: 12px;
+    color: #fff;
   }
   .number {
     padding: 0 10px;
     font-size: 16px;
     color: #444;
     width: calc(~"30% - 20px");
-    background-color: rgb(253, 255, 255);
+    background-color: rgba(253, 255, 255, 0.2);
   }
   .people-sum {
     color: #fe0251;
@@ -194,7 +410,7 @@ export default {
     overflow: hidden;
     text-align: center;
     color: #fff;
-    background-color: #ff0068;
+    background-color: rgba(211, 6, 74, 0.4);
   }
   .rank {
     font-size: 16px;
@@ -228,6 +444,12 @@ export default {
     height: 211.05px;
     overflow: hidden;
     position: relative;
+    > img {
+      opacity: 0.4;
+    }
+  }
+  .footer {
+    margin-top: 10px;
   }
 }
 </style>

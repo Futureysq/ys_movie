@@ -3,7 +3,8 @@
     <van-tabs active="a" color="#EB48AD" title-active-color="#EB48AD" :border="false">
       <van-tab title="正在热映" name="a">
         <div class="hoting-box" ref="moviebox">
-          <div class="hoting clearfix" v-for="(item,index) in movieData.data.subjects" :key="index" ref="movieitem">
+          <div class="hoting clearfix" v-for="(item,index) in movieData.data.subjects" :key="index" ref="movieitem" :id="item.id"
+            @click="viewMovieDetail({name: 'movieDetails', params: {id: item.id}})">
             <div class="fl post">
               <img class="auto-img" :src="item.images.medium" alt="">
             </div>
@@ -142,7 +143,12 @@ export default {
           // console.log("err ==> ", err);
           this.$toast.clear();
         });
-    }
+    },
+    //查看电影详情
+    viewMovieDetail(o) {
+      this.$router.push(o);
+    },
+
   },
 
   created() {
@@ -200,6 +206,7 @@ export default {
       margin-top: 1px;
     }
     .movie-name{
+      max-width: 70px;
       color: #323233;
       margin-top: 2px;
     }

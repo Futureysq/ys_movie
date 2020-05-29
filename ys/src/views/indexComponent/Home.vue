@@ -81,18 +81,20 @@
         <span class="fl">正在热映</span>
         <van-icon class="arrow" name="arrow" />
         <div class="huan fr">
-        <van-icon class="fl huan-icon" name="replay" />
+          <van-icon class="fl huan-icon" name="replay" @click="changeNewMovieData"/>
         </div>
       </div>
       <div class="recommend-list">
         <ul class="recommend-ul clearfix">
-          <li class="recommend-li" v-for="(item,index) in showMovieData.data" :key="index" :id="item.id">
+          <li
+            class="recommend-li"
+            v-for="(item,index) in showMovieData.data"
+            :key="index"
+            :id="item.id"
+            @click="viewMovieDetail({name: 'movieDetails', params: {id: item.id}})"
+          >
             <div class="list-img">
-              <img
-                class="auto-img"
-                :src="item.images.small"
-                alt
-              />
+              <img class="auto-img" :src="item.images.small" alt />
               <div class="count">
                 <span class="listen-count">{{item.rating.average}}</span>
               </div>
@@ -110,18 +112,20 @@
         <span class="fl">即将上映</span>
         <van-icon class="arrow" name="arrow" />
         <div class="huan fr">
-        <van-icon class="fl huan-icon" name="replay" />
+          <van-icon class="fl huan-icon" name="replay" />
         </div>
       </div>
       <div class="recommend-list">
         <ul class="recommend-ul clearfix">
-          <li class="recommend-li" v-for="(item,index) in showMovieFutureData.data" :key="index" :id="item.id">
+          <li
+            class="recommend-li"
+            v-for="(item,index) in showMovieFutureData.data"
+            :key="index"
+            :id="item.id"
+            @click="viewMovieDetail({name: 'movieDetails', params: {id: item.id}})"
+          >
             <div class="list-img">
-              <img
-                class="auto-img"
-                :src="item.images.small"
-                alt
-              />
+              <img class="auto-img" :src="item.images.small" alt />
               <div class="count">
                 <span class="listen-count">{{item.rating.average}}</span>
               </div>
@@ -136,7 +140,6 @@
         </ul>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -147,24 +150,43 @@ const { mapState, mapMutations } = createNamespacedHelpers("homeModule");
 export default {
   name: "home",
   computed: {
-    ...mapState(["value", "baseUrl","movieIngData","showMovieData",'isInit','showMovieFutureData','movieFutureData'])
+    ...mapState([
+      "value",
+      "baseUrl",
+      "movieIngData",
+      "showMovieData",
+      "isInit",
+      "showMovieFutureData",
+      "movieFutureData"
+    ])
   },
   methods: {
-    
+    //换一换数据
+    changeNewMovieData() {
+      // console.log('ss')
+      if (this.isHasData) {
+        //提交换一换数据
+        this.$store.commit("homeModule/toggleNewMovieData");
+        
+      }
+    },
+    //查看电影详情
+    viewMovieDetail(o) {
+      this.$router.push(o);
+    }
   },
 
   created() {
-    
     // console.log('this.showMovieData ==> ', this.showMovieData);
 
     if (!this.isInit) {
-        return;
-      }
+      return;
+    }
     //开启加载提示
-      this.$toast.loading({
-        duration: 0,
-        message: '加载中...'
-      });
+    this.$toast.loading({
+      duration: 0,
+      message: "加载中..."
+    });
 
     this.axios({
       method: "GET",
@@ -172,36 +194,34 @@ export default {
     })
       .then(result => {
         // console.log("result ==> ", result);
-        
+
         this.$store
-          .dispatch('homeModule/getMovieIngData', result.data.subjects)
-          .then(() => {         
+          .dispatch("homeModule/getMovieIngData", result.data.subjects)
+          .then(() => {
             // console.log('this.showMovieData ==> ', this.showMovieData);
 
-             this.$toast.clear();
-
-          })
-        })
+            this.$toast.clear();
+          });
+      })
       .catch(err => {
         // console.log("err ==> ", err);
       });
 
-      this.axios({
+    this.axios({
       method: "GET",
       url: this.baseUrl + "/coming_soon"
     })
       .then(result => {
         // console.log("result ==> ", result);
-        
+
         this.$store
-          .dispatch('homeModule/getMovieFutureData', result.data.subjects)
-          .then(() => {         
+          .dispatch("homeModule/getMovieFutureData", result.data.subjects)
+          .then(() => {
             // console.log('this.showMovieFutureData ==> ', this.showMovieFutureData);
 
-             this.$toast.clear();
-
-          })
-        })
+            this.$toast.clear();
+          });
+      })
       .catch(err => {
         // console.log("err ==> ", err);
       });
@@ -249,7 +269,7 @@ export default {
     font-size: 14px;
     // margin-top: 12px;
   }
-  .huan-icon{
+  .huan-icon {
     line-height: 40px;
     margin-right: 5px;
   }
@@ -307,7 +327,7 @@ export default {
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
-  .mainland-pubdate{
+  .mainland-pubdate {
     color: rgb(18, 133, 233);
   }
   // background-color: #fff;

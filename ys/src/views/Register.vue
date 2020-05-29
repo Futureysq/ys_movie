@@ -100,6 +100,7 @@ export default {
         });
 
         self.$store.commit("registerModule/register", false);
+      
 
         let time = new Date().getTime();
 
@@ -120,6 +121,11 @@ export default {
 
         //写入本地存储，模拟数据库
         localStorage.setItem("users", JSON.stringify(users));
+        
+        //跳转登陆页面
+        self.$router.push({name:"login"});
+
+        
       }, randomTime);
     },
 
@@ -168,11 +174,21 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.logo-box {
+.register{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  // height: 100%;
+
+  // background: url("../assets/images/p2574278284.jpg");
+  // background-size: cover;
+  .logo-box {
   height: 200px;
   position: relative;
-  background: url("../assets/images/register_bg.png");
-  background-size: cover;
+  // background: url("../assets/images/register_bg.png");
+  // background-size: cover;
   .logo {
     width: 100px;
     height: 100px;
@@ -182,7 +198,9 @@ export default {
     top: 0;
     bottom: 0;
     margin: auto;
-    background-color: antiquewhite;
+    background: url("../assets/images/96dda144ad345982baf7b0ed0af431adcbef844b.jpg");
+    background-size: cover;
+    // background-color: antiquewhite;
     border-radius: 50%;
   }
 }
@@ -198,5 +216,6 @@ export default {
 }
 .login-text {
   color: #666;
+}
 }
 </style>

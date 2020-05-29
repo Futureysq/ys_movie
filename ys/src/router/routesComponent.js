@@ -32,7 +32,12 @@ class RoutesComponent{
     movieDetailsComponent() {
         return import('../views/MovieDetails.vue')
     }
-    
+    likeMovieComponent() {
+        return import('../views/LikeMovie.vue')
+    }
+    buyMovieTickComponent() {
+        return import('../views/BuyMovieTick.vue')
+    }
 }
 
 export default new RoutesComponent();

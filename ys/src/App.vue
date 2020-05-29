@@ -27,6 +27,8 @@ html,body{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 p{
   margin: 0;

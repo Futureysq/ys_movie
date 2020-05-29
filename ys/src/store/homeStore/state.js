@@ -21,6 +21,9 @@ export const state = {
         data: []
     },
 
+    //是否存在换一换数据
+  isHasData: true,
+
     //是否初始化
     isInit: true
 }

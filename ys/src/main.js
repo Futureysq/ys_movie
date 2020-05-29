@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 
+
 import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
 import {
@@ -19,7 +20,10 @@ import {
   Search,
   Swipe,
   SwipeItem,
-  NavBar
+  NavBar,
+  Grid,
+  GridItem,
+  Cell
 } from 'vant'
 
 import 'lib-flexible/flexible'
@@ -38,6 +42,9 @@ Vue
   .use(Swipe)
   .use(SwipeItem)
   .use(NavBar)
+  .use(Grid)
+  .use(GridItem)
+  .use(Cell)
 
 Vue.config.productionTip = false
 

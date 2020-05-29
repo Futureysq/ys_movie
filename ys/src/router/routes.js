@@ -55,9 +55,21 @@ export default [
       name: 'movieDetails',
       component: routesComponent.movieDetailsComponent
     },
+
+    {
+      path: '/likeMovie',
+      name: 'likeMovie',
+      component: routesComponent.likeMovieComponent
+    },
+
+    {
+      path: '/buyMovieTick',
+      name: 'buyMovieTick',
+      component: routesComponent.buyMovieTickComponent
+    },
     
     {
         path: '*',
-        redirect: {name: 'movieDetails'}
+        redirect: {name: 'login'}
     }
 ]

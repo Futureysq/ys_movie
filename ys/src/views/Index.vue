@@ -31,6 +31,10 @@ const { mapState } = createNamespacedHelpers("indexModule");
            togglePage(o){
                this.$router.push(o);
            }
+       },
+       created() {
+           //纠正底部导航的标签
+           this.active = this.$route.name;
        }
     }
 </script>
